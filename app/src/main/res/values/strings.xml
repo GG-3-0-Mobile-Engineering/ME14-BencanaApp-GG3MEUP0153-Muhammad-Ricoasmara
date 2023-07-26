@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">FinalProject</string>
+    <string name="darkmode">Dark Mode</string>
+    <string name="namedisaster">Informasi Bencana Terbaru</string>
+    <string name="img">ImgView</string>
+    <string name="txtbencana">Bencana</string>
+    <string name="txtdeskripsi">Deskripsi</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoidmFubjUiLCJhIjoiY2xrOWhudHRzMHVsdjNmcm82djhlNGNjaCJ9.pUv3h82jkI72FMpS3oaaeg</string>
+</resources>
