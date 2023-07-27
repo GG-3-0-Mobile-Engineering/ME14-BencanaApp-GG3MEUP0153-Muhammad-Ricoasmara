@@ -16,7 +16,7 @@ class MainViewModel:ViewModel(){
     val disasterList: MutableLiveData<List<GeometriesItem>?> get() = _disasterList
 
     fun getListDisaster() {
-        ApiConfig.instance.getRecent(604800).enqueue(object :Callback<ApiResponse>{
+        ApiConfig.getApiService().getRecent(604800).enqueue(object :Callback<ApiResponse>{
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
                 _disasterList.value= response.body()?.result?.objects?.output?.geometries as List<GeometriesItem>?
                 Log.i("CHECK_RESPONSE", "${response.body()?.statusCode}")

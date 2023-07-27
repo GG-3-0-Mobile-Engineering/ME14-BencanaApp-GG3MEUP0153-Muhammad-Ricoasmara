@@ -11,16 +11,17 @@
         <item name="colorSecondary">@color/gojekGreen</item>
         <item name="colorOnSecondary">@color/white</item>
     </style>
-
     <style name="Theme.FinalProject" parent="Base.Theme.FinalProject" />
-<style name="BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+
+
+    <style name="BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
     <item name="android:background">
-        @android:color/transparent
+        @android:color/background_dark
     </item>
 </style>
-    <style name="BottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+    <style name="BottomSheetDialogTheme" parent="Theme.Design.BottomSheetDialog">
         <item name="bottomSheetStyle">
-    @style/BottomSheetStyle
+        @style/BottomSheetStyle
         </item>
     </style>
 </resources>

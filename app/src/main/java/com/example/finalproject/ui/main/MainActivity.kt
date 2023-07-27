@@ -1,6 +1,7 @@
 package com.example.finalproject.ui.main
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
@@ -8,6 +9,8 @@ import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
@@ -23,6 +26,7 @@ import com.example.finalproject.api.ApiResponse
 import com.example.finalproject.api.GeometriesItem
 
 import com.example.finalproject.databinding.ActivityMainBinding
+import com.example.finalproject.ui.darkmode.DarkThemeActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
@@ -46,7 +50,7 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private val list=ArrayList<GeometriesItem>()
 
-    var mapView: MapView? = null
+    private var mapView: MapView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -68,7 +72,7 @@ class MainActivity : AppCompatActivity() {
         dialog.setContentView(dialogView)
 
         BottomSheetBehavior.from(binding.standardbottomsheet).apply {
-            peekHeight = 500
+            peekHeight = 100
             this.state = BottomSheetBehavior.STATE_COLLAPSED
         }
         setMap()
@@ -77,14 +81,14 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun getList(rvRec:RecyclerView) {
-        ApiConfig.instance.getRecent(604800).enqueue(object: Callback<ApiResponse> {
+        ApiConfig.getApiService().getRecent(604800).enqueue(object: Callback<ApiResponse> {
             override fun onResponse(
                 call: Call<ApiResponse>,
                 response: Response<ApiResponse>
             ) {
                 val test=response.body()?.result?.objects?.output?.geometries
                 Log.i("CHECK_RESPONSE", "${response.body()?.statusCode}")
-                test?.forEachIndexed { index, _ -> addAnnotationToMap(test!![index].coordinates!![0], test[index].coordinates!![1]) }
+                test?.forEachIndexed { index, _ -> addAnnotationToMap(test[index].coordinates!![0], test[index].coordinates!![1]) }
 
                 response.body()?.result?.objects?.output?.geometries?.let{list.addAll(it)}
 
@@ -106,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         mapView=binding.mapView
         mapView?.getMapboxMap()?.loadStyleUri(Style.MAPBOX_STREETS)
         mapView?.scalebar?.enabled = false
-
+        searchDisaster()
     }
     private fun addAnnotationToMap(lng:Double,lat:Double ) {
         bitmapFromDrawableRes(
@@ -142,4 +146,29 @@ class MainActivity : AppCompatActivity() {
             bitmap
         }
     }
+    fun searchDisaster(){
+        binding.searchBar.inflateMenu(R.menu.option_menu)
+        binding.searchBar.setOnMenuItemClickListener{
+            when(it.itemId){
+                R.id.setting->{
+                    val intent= Intent(applicationContext,DarkThemeActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                else -> true
+            }
+        }
+        binding.searchView.setupWithSearchBar(binding.searchBar)
+        binding.searchView
+            .editText
+
+    }
+
+//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+//        val inflater=menuInflater
+//        inflater.inflate(R.menu.option_menu,menu)
+//        return super.onCreateOptionsMenu(menu)
+//    }
+
 }
