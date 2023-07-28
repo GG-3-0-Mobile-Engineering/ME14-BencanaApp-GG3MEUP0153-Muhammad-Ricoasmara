@@ -27,6 +27,7 @@ import com.example.finalproject.api.GeometriesItem
 
 import com.example.finalproject.databinding.ActivityMainBinding
 import com.example.finalproject.ui.darkmode.DarkThemeActivity
+import com.example.finalproject.ui.notifikasi.NotifikasiActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
@@ -152,6 +153,11 @@ class MainActivity : AppCompatActivity() {
             when(it.itemId){
                 R.id.setting->{
                     val intent= Intent(applicationContext,DarkThemeActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.notifikasi->{
+                    val intent= Intent(applicationContext,NotifikasiActivity::class.java)
                     startActivity(intent)
                     true
                 }
