@@ -86,9 +86,9 @@ class MainActivity : AppCompatActivity() {
                 call: Call<ApiResponse>,
                 response: Response<ApiResponse>
             ) {
-                val test=response.body()?.result?.objects?.output?.geometries
+                val recentDisaster=response.body()?.result?.objects?.output?.geometries
                 Log.i("CHECK_RESPONSE", "${response.body()?.statusCode}")
-                test?.forEachIndexed { index, _ -> addAnnotationToMap(test[index].coordinates!![0], test[index].coordinates!![1]) }
+                recentDisaster?.forEachIndexed { index, _ -> addAnnotationToMap(recentDisaster[index].coordinates!![0], recentDisaster[index].coordinates!![1]) }
 
                 response.body()?.result?.objects?.output?.geometries?.let{list.addAll(it)}
 

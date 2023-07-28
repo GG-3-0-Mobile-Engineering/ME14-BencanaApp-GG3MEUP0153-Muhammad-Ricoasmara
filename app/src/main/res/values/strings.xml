@@ -8,4 +8,5 @@
     <string name="mapbox_access_token">pk.eyJ1IjoidmFubjUiLCJhIjoiY2xrOWhudHRzMHVsdjNmcm82djhlNGNjaCJ9.pUv3h82jkI72FMpS3oaaeg</string>
     <string name="searchbencana">Cari Bencana</string>
     <string name="Setting">Setting</string>
+    <string name="notifikasi">notifikasi</string>
 </resources>
