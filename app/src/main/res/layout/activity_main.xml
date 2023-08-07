@@ -19,32 +19,6 @@
         app:mapbox_cameraTargetLat="-2.5"
         app:mapbox_cameraTargetLng="118"
         app:mapbox_cameraZoom="2.5">
-<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent">-->
-
-<!--            <TextView-->
-<!--                android:id="@+id/testdark"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginTop="56dp"-->
-<!--                android:text="@string/darkmode"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintHorizontal_bias="0.0"-->
-<!--                app:layout_constraintStart_toEndOf="@+id/searchView"-->
-<!--                app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--            <androidx.appcompat.widget.SearchView-->
-<!--                android:id="@+id/searchView"-->
-<!--                android:layout_width="350dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginStart="4dp"-->
-<!--                android:layout_marginTop="48dp"-->
-<!--                android:background="@color/transparent"-->
-<!--                android:hint="@string/searchbencana"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="parent" />-->
-<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
 
 
@@ -76,14 +50,14 @@
         app:layout_anchor="@id/search_bar">
         <!-- Search suggestions/results go here (ScrollView, RecyclerView, etc.). -->
     </com.google.android.material.search.SearchView>
+
     <FrameLayout
         android:id="@+id/standardbottomsheet"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
+        android:layout_height="389dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="parent">
-
         <include layout="@layout/bottom_sheet_layout" />
     </FrameLayout>
 

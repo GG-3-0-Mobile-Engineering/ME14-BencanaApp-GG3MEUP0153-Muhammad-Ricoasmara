@@ -12,6 +12,5 @@
             android:icon="@drawable/settings"
             android:title="@string/Setting"
             app:showAsAction="ifRoom" />
-
     </group>
 </menu>

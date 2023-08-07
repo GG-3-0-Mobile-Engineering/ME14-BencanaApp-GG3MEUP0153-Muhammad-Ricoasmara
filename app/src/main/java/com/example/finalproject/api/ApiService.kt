@@ -12,9 +12,16 @@ interface ApiService {
         @Query("end")end:String
     ): Call<ApiResponse>
 
-   @GET("reports")
-    fun getListDisaster():Call<ApiResponse>
+   @GET("report")
+     fun getListDisaster():Call<ApiResponse>
 
     @GET("reports?")
-    fun getRecent(@Query("timeperiod") timeperiod: Int): Call<ApiResponse>
+    fun getRecent(@Query("timeperiod") timeperiod: Int):Call<ApiResponse>
+
+    @GET("reports?")
+    fun getAllDisaster(
+        @Query("timeperiod") timeperiod: Int? = 172800,
+        @Query("admin") admin: String? = null,
+        @Query("disaster") disaster: String? = null
+    ):Call<ApiResponse>
 }

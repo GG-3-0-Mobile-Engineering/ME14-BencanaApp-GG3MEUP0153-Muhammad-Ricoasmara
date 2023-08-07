@@ -9,14 +9,14 @@ import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
@@ -26,7 +26,10 @@ import com.example.finalproject.api.ApiResponse
 import com.example.finalproject.api.GeometriesItem
 
 import com.example.finalproject.databinding.ActivityMainBinding
+import com.example.finalproject.preference.DataPreferences
+import com.example.finalproject.remote.ViewModelFactory
 import com.example.finalproject.ui.darkmode.DarkThemeActivity
+import com.example.finalproject.ui.darkmode.DarkThemeViewModel
 import com.example.finalproject.ui.notifikasi.NotifikasiActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -48,7 +51,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var dialog: BottomSheetDialog
     private lateinit var adapter: Disasteradapater
-    private val viewModel: MainViewModel by viewModels()
+    private val mainViewModel by viewModels<MainViewModel> {
+        ViewModelFactory(DataPreferences.getInstance(dataStore))
+    }
     private val list=ArrayList<GeometriesItem>()
 
     private var mapView: MapView? = null
@@ -56,20 +61,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         val rvItem= findViewById<RecyclerView>(R.id.rvItem)
         rvItem.setHasFixedSize(true)
         rvItem.layoutManager=LinearLayoutManager(this)
         adapter = Disasteradapater(list)
-
         showBottomSheet()
-
-        getList(rvItem)
+//        getList(rvItem)
+        mainView(rvItem)
+        settingDarkmode()
     }
 
     private fun showBottomSheet() {
         val dialogView = layoutInflater.inflate(R.layout.bottom_sheet_layout, null)
-        dialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+        dialog = BottomSheetDialog(this)
         dialog.setContentView(dialogView)
 
         BottomSheetBehavior.from(binding.standardbottomsheet).apply {
@@ -80,6 +84,14 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun mainView(rcView:RecyclerView){
+        mainViewModel.getRecentReport()
+        mainViewModel.disasterList.observe(this,{disaster->
+            val adapter= disaster?.let { Disasteradapater(it) }
+            rcView.adapter=adapter
+
+        })
+    }
 
     private fun getList(rvRec:RecyclerView) {
         ApiConfig.getApiService().getRecent(604800).enqueue(object: Callback<ApiResponse> {
@@ -104,9 +116,7 @@ class MainActivity : AppCompatActivity() {
 
         })
 
-
         }
-
     private fun setMap(){
         mapView=binding.mapView
         mapView?.getMapboxMap()?.loadStyleUri(Style.MAPBOX_STREETS)
@@ -119,7 +129,7 @@ class MainActivity : AppCompatActivity() {
             R.drawable.red_marker
         )?.let {
             val annotationApi = mapView?.annotations
-            val pointAnnotationManager = annotationApi?.createPointAnnotationManager(mapView!!)
+            val pointAnnotationManager = annotationApi?.createPointAnnotationManager()
             val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
                 .withPoint(com.mapbox.geojson.Point.fromLngLat(lng, lat))
                 .withIconImage(it)
@@ -164,6 +174,7 @@ class MainActivity : AppCompatActivity() {
 
                 else -> true
             }
+
         }
         binding.searchView.setupWithSearchBar(binding.searchBar)
         binding.searchView
@@ -171,10 +182,17 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-//        val inflater=menuInflater
-//        inflater.inflate(R.menu.option_menu,menu)
-//        return super.onCreateOptionsMenu(menu)
-//    }
+  fun settingDarkmode(){
+      val settingDark=DataPreferences.getInstance(dataStore)
+      val viewModeldark=ViewModelProvider(this,ViewModelFactory(settingDark)).get(DarkThemeViewModel::class.java)
 
+  viewModeldark.getThemeSetting().observe(this){
+      isNightActive->
+      if (isNightActive){
+          AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+      }else{
+          AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+      }
+  }
+  }
 }

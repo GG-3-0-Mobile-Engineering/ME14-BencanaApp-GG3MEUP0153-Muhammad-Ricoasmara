@@ -4,6 +4,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.lifecycle.liveData
+import com.example.finalproject.api.ApiResponse
+import com.example.finalproject.api.ApiService
+import com.example.finalproject.remote.DisasterRepository
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.Flow
 
@@ -13,6 +17,8 @@ class DataPreferences constructor(private val dataStore: DataStore<Preferences>)
     @Volatile
     private var INSTANCE:DataPreferences?=null
     private val themeKey= booleanPreferencesKey("theme_setting")
+
+
 
     fun getInstance(dataStore: DataStore<Preferences>):DataPreferences {
         return INSTANCE ?: synchronized(this) {
@@ -32,4 +38,5 @@ class DataPreferences constructor(private val dataStore: DataStore<Preferences>)
             preferences[themeKey]=isDarkMode
         }
     }
+
 }

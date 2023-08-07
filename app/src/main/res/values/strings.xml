@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FinalProject</string>
+    <string name="app_name">Disaster App</string>
     <string name="darkmode">Dark Mode</string>
     <string name="namedisaster">Informasi Bencana Terbaru</string>
     <string name="img">ImgView</string>

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.finalproject.preference.DataPreferences
+import com.example.finalproject.remote.DisasterRepository
 import kotlinx.coroutines.launch
 
 
