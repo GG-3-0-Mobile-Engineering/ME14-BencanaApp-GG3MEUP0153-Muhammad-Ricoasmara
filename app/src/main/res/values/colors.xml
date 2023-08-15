@@ -6,4 +6,12 @@
     <color name="black30">#FF303030</color>
     <color name="gojekGreen">#FF00880c</color>
     <color name="grey">#FF666666</color>
+<!--    color disaster-->
+    <color name="Flood">#1A92E3</color>
+    <color name="Earthquake">#9E640D</color>
+    <color name="Fire">#FF5733</color>
+    <color name="Haze">#FFC60C</color>
+    <color name="Wind">#2FDA77</color>
+    <color name="Volcano">#F60707</color>
+
 </resources>

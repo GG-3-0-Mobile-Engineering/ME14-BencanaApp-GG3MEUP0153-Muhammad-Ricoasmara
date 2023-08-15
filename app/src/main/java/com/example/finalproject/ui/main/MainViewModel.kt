@@ -23,24 +23,9 @@ class MainViewModel(private val repository: DisasterRepository) : ViewModel() {
     private val _disasterList = MutableLiveData<List<GeometriesItem>?>()
     val disasterList: MutableLiveData<List<GeometriesItem>?> get() = _disasterList
 
-
-    fun getListData() {
-        ApiConfig.getApiService().getListDisaster().enqueue(object : Callback<ApiResponse> {
-            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                if (response.isSuccessful) {
-                    val recentDisaster = response.body()?.result?.objects?.output?.geometries
-                    _disasterList.postValue(recentDisaster)
-
-                } else {
-
-                }
-            }
-
-            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
-
-            }
-        })
-    }
+    private var _apiResponse = MutableLiveData<ApiResponse>()
+    val apiResponse: LiveData<ApiResponse>
+        get() = _apiResponse
 
    fun getRecentReport(){
        viewModelScope.launch {
@@ -49,5 +34,20 @@ class MainViewModel(private val repository: DisasterRepository) : ViewModel() {
            }
        }
    }
-    fun test()=repository.getDisaster()
+  fun getDisasterTypeModel(disaterType:String){
+      ApiConfig.getApiService().getDisasterType(disaterType).enqueue(object:Callback<ApiResponse>{
+          override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+            if(response.isSuccessful){
+                response.body()?.result?.objects?.output?.geometries
+            }else{
+
+            }
+          }
+
+          override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+              TODO("Not yet implemented")
+          }
+
+      })
+  }
 }

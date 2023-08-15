@@ -14,12 +14,11 @@ import retrofit2.Response
 
 class DisasterRepository(private val apiService: ApiService) {
     fun getDisaster(): LiveData<Result<ApiResponse>> = liveData {
-        emit(Result.Loading)
         try {
             apiService
 
         } catch (e: Exception) {
-            emit(Result.Error(e.message.toString()))
+
         }
     }
     fun getRecentDisasters(callback: (List<GeometriesItem>?) -> Unit) {

@@ -9,4 +9,13 @@
     <string name="searchbencana">Cari Bencana</string>
     <string name="Setting">Setting</string>
     <string name="notifikasi">notifikasi</string>
+    <string name="disaster_type">Disaster Type</string>
+    <string name="createat">create at:\n</string>
+    <string name="type_banjir">Banjir</string>
+    <string name="type_gempa">Gempa</string>
+    <string name="type_kebakaran">Kebakaran</string>
+    <string name="type_kabut">Kabut</string>
+    <string name="type_anginkencang">Angin Kencang</string>
+    <string name="type_gunungapi">Gunung Api</string>
+    <string name="location">Location</string>
 </resources>

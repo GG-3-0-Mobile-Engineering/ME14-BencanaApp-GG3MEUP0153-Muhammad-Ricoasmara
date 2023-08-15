@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatDelegate
@@ -31,8 +32,13 @@ import com.example.finalproject.remote.ViewModelFactory
 import com.example.finalproject.ui.darkmode.DarkThemeActivity
 import com.example.finalproject.ui.darkmode.DarkThemeViewModel
 import com.example.finalproject.ui.notifikasi.NotifikasiActivity
+import com.example.finalproject.utils.ProggresLoading
+import com.example.finalproject.utils.nameProvince
+
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.SearchView.OnQueryTextListener
 
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
@@ -40,9 +46,14 @@ import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.scalebar.scalebar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
 
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
@@ -51,23 +62,29 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var dialog: BottomSheetDialog
     private lateinit var adapter: Disasteradapater
+    private lateinit var proggresLoading:ProggresLoading
+    private lateinit var progressBar: View
+    private var selecdisasterType: String = ""
+    private var mapviewNotReady:Boolean=true
     private val mainViewModel by viewModels<MainViewModel> {
         ViewModelFactory(DataPreferences.getInstance(dataStore))
     }
     private val list=ArrayList<GeometriesItem>()
 
-    private var mapView: MapView? = null
+    private lateinit var mapView: MapView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        proggresLoading= ProggresLoading()
+        progressBar=binding.loadingProggres
         val rvItem= findViewById<RecyclerView>(R.id.rvItem)
         rvItem.setHasFixedSize(true)
         rvItem.layoutManager=LinearLayoutManager(this)
         adapter = Disasteradapater(list)
         showBottomSheet()
-//        getList(rvItem)
-        mainView(rvItem)
+        getList(rvItem)
+        typeDisaster()
         settingDarkmode()
     }
 
@@ -75,25 +92,16 @@ class MainActivity : AppCompatActivity() {
         val dialogView = layoutInflater.inflate(R.layout.bottom_sheet_layout, null)
         dialog = BottomSheetDialog(this)
         dialog.setContentView(dialogView)
-
         BottomSheetBehavior.from(binding.standardbottomsheet).apply {
             peekHeight = 100
             this.state = BottomSheetBehavior.STATE_COLLAPSED
         }
         setMap()
-
     }
 
-    private fun mainView(rcView:RecyclerView){
-        mainViewModel.getRecentReport()
-        mainViewModel.disasterList.observe(this,{disaster->
-            val adapter= disaster?.let { Disasteradapater(it) }
-            rcView.adapter=adapter
-
-        })
-    }
 
     private fun getList(rvRec:RecyclerView) {
+        proggresLoading.viewLoading(true,progressBar)
         ApiConfig.getApiService().getRecent(604800).enqueue(object: Callback<ApiResponse> {
             override fun onResponse(
                 call: Call<ApiResponse>,
@@ -115,7 +123,7 @@ class MainActivity : AppCompatActivity() {
 
 
         })
-
+        proggresLoading.viewLoading(false,progressBar)
         }
     private fun setMap(){
         mapView=binding.mapView
@@ -123,7 +131,7 @@ class MainActivity : AppCompatActivity() {
         mapView?.scalebar?.enabled = false
         searchDisaster()
     }
-    private fun addAnnotationToMap(lng:Double,lat:Double ) {
+    private fun addAnnotationToMap(lng: Double, lat:Double ) {
         bitmapFromDrawableRes(
             this@MainActivity,
             R.drawable.red_marker
@@ -157,7 +165,7 @@ class MainActivity : AppCompatActivity() {
             bitmap
         }
     }
-    fun searchDisaster(){
+   private fun searchDisaster(){
         binding.searchBar.inflateMenu(R.menu.option_menu)
         binding.searchBar.setOnMenuItemClickListener{
             when(it.itemId){
@@ -174,15 +182,23 @@ class MainActivity : AppCompatActivity() {
 
                 else -> true
             }
-
         }
         binding.searchView.setupWithSearchBar(binding.searchBar)
-        binding.searchView
-            .editText
+        binding.searchView.editText
+       binding.searchView.setOnQueryListener(object: SearchView.OnQueryTextListener{
+           override fun onQueryTextSubmit(query: String?): Boolean {
+               query?.let { searchByprovince(it) }
+               return true
+           }
 
+           override fun onQueryTextChange(newText: String?): Boolean {
+               TODO("Not yet implemented")
+           }
+
+       })
     }
 
-  fun settingDarkmode(){
+  private fun settingDarkmode(){
       val settingDark=DataPreferences.getInstance(dataStore)
       val viewModeldark=ViewModelProvider(this,ViewModelFactory(settingDark)).get(DarkThemeViewModel::class.java)
 
@@ -195,4 +211,94 @@ class MainActivity : AppCompatActivity() {
       }
   }
   }
+
+    private fun typeDisaster(){
+        binding.btnGempa.setOnClickListener {
+            GlobalScope.launch {
+                selecdisasterType="eartquake"
+                withContext(Dispatchers.IO){
+                    adapter.filterType(selecdisasterType)
+                }
+            }
+        }
+        binding.btnBanjir.setOnClickListener {
+            GlobalScope.launch {
+                selecdisasterType="flood"
+                withContext(Dispatchers.IO){
+                    adapter.filterType(selecdisasterType)
+                }
+            }
+        }
+        binding.btnKabut.setOnClickListener {
+            GlobalScope.launch {
+                selecdisasterType="haze"
+                withContext(Dispatchers.IO){
+                    adapter.filterType(selecdisasterType)
+                }
+            }
+        }
+        binding.btnKebakaran.setOnClickListener {
+            GlobalScope.launch {
+                selecdisasterType="fire"
+                withContext(Dispatchers.IO){
+                    adapter.filterType(selecdisasterType)
+                }
+
+            }
+        }
+        binding.btnAnginKencang.setOnClickListener {
+            GlobalScope.launch {
+                selecdisasterType="wind"
+                withContext(Dispatchers.IO){
+                    adapter.filterType(selecdisasterType)
+                }
+            }
+        }
+        binding.btnGunungApi.setOnClickListener {
+            GlobalScope.launch {
+                selecdisasterType="volcano"
+                withContext(Dispatchers.IO){
+                    adapter.filterType(selecdisasterType)
+                }
+            }
+        }
+        mainViewModel.getDisasterTypeModel(disaterType = "")
+        mainViewModel.disasterList.observe(this){result->
+           result?.let {
+               val rvItem= findViewById<RecyclerView>(R.id.rvItem)
+               adapter= Disasteradapater(it)
+               rvItem.adapter=adapter
+           }
+        }
+    }
+
+    private fun searchByprovince(provinceName:String){
+        if(provinceName.isNotBlank()){
+            val filterProvince= mainViewModel.apiResponse.value?.result?.objects?.output?.geometries?.filter {
+            val properties=it.properties
+                val regionCode=properties?.tags?.instanceRegionCode
+                val provinceName= nameProvince.getnameProvince(regionCode)
+                provinceName.equals(provinceName,true)
+            }?: emptyList()
+            adapter.filterProvinceName(filterProvince)
+            if (provinceName.equals("DKI Jakarta",true)){
+                for(geomertry in filterProvince){
+                    val properties=geomertry?.properties
+                    val disasterType= properties?.disasterType
+                    if (disasterType.equals("flood",true)){
+                        val reportData=properties?.reportData
+                        val floodDepth=reportData?.floodDepth
+                        if (floodDepth!=null){
+
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+}
+
+private fun com.google.android.material.search.SearchView.setOnQueryListener(param: OnQueryTextListener) {
+
 }
